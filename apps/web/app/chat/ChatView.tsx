@@ -77,15 +77,22 @@ function AnswerProse({
     // A list whose items are separated by single newlines would otherwise collapse into one
     // paragraph, which is what a whole answer rendered as a single bullet looks like.
     .flatMap((block) => (/^\s*[*-]\s+/m.test(block) ? block.split('\n') : [block]))
-    .filter((paragraph) => paragraph.trim() !== '')
+    // A heading followed by a single newline would otherwise swallow the paragraph under it.
+    .flatMap((block) =>
+      /^\s*#{1,6}\s+/m.test(block) ? block.split(/\n(?=\s*#)|(?<=^\s*#.*)\n/m) : [block],
+    )
+    // A thematic break carries no content worth a line of its own.
+    .filter((paragraph) => paragraph.trim() !== '' && !/^\s*([-*_])\1{2,}\s*$/.test(paragraph))
     .map((paragraph, pIndex) => ({
       key: `p${pIndex}`,
       last: false,
       // The model writes markdown whether or not it was asked to, and which markers it
-      // reaches for varies by model. Rather than fight the prompt, the four that actually
-      // appear are rendered: bullets, `code`, **strong** and *emphasis*.
+      // reaches for varies by model. Rather than fight the prompt, the ones that actually
+      // appear are rendered: headings, bullets, `code`, **strong** and *emphasis*.
+      heading: /^\s*#{1,6}\s+/.test(paragraph),
       bullet: /^\s*[*-]\s+/.test(paragraph),
       segments: paragraph
+        .replace(/^\s*#{1,6}\s+/, '')
         .replace(/^\s*[*-]\s+/gm, '')
         // Order matters: **strong** has to be tried before *emphasis*, or the outer pair
         // is consumed one asterisk at a time and the marker leaks into the text.
@@ -116,6 +123,7 @@ function AnswerProse({
           key={paragraph.key}
           className={cn(
             index > 0 && 'mt-3.5',
+            paragraph.heading && 'font-medium text-ink',
             paragraph.bullet &&
               'relative pl-4 before:absolute before:left-1 before:text-ink-4 before:content-["·"]',
           )}
@@ -132,9 +140,17 @@ function AnswerProse({
               );
             }
             if (segment.strong) {
+              // Models often bold an identifier: **`amount`**. Render the code, not its fences.
+              const inner = /^`([^`]+)`$/.exec(segment.text);
               return (
                 <strong key={segment.key} className="font-medium text-ink">
-                  {segment.text}
+                  {inner ? (
+                    <code className="rounded-sm bg-surface-2 px-1 py-0.5 font-mono text-[13px]">
+                      {inner[1]}
+                    </code>
+                  ) : (
+                    segment.text
+                  )}
                 </strong>
               );
             }
