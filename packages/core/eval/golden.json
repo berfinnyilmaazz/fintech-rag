@@ -1,0 +1,213 @@
+{
+  "$comment": [
+    "The golden set for scripts/eval.ts. Two rules govern what is in here.",
+    "",
+    "1. Every answerable question has exactly one document that answers it. Questions with",
+    "   many equally correct sources are deliberately excluded: 'which months had a chargeback",
+    "   ratio below the threshold?' matches dozens of settlement reports, and recall@5 cannot",
+    "   score that.",
+    "2. 'expected' is what recall and MRR are computed against. 'supporting' is a document a",
+    "   good answer also draws on; it is reported separately and never folded into recall, so",
+    "   the headline numbers stay comparable across variants."
+  ],
+  "questions": [
+    {
+      "id": "trap-deprecated",
+      "group": "trap",
+      "question": "How do I create a payment with the current Payments API, and what happened to /v1/charges?",
+      "expected": ["api/payments-api-v2.md"],
+      "supporting": ["api/payments-api-v1.md"],
+      "note": "Trap 1. v1 is supporting, not expected: the answer cites v2 but has to reach v1 to say it is retired, which is why v1 is demoted by ranks rather than filtered."
+    },
+    {
+      "id": "trap-duplicate-payouts",
+      "group": "trap",
+      "question": "Why were payouts duplicated in April 2026, and what changed to prevent it?",
+      "expected": ["incidents/2026-04-duplicate-payouts.md"],
+      "supporting": [
+        "decisions/adr-006-mandatory-payout-idempotency.md",
+        "release-notes/2026-05-api-2.4.md"
+      ],
+      "note": "Trap 4, multi-document."
+    },
+    {
+      "id": "trap-dispute-refunded",
+      "group": "trap",
+      "question": "What happens if a buyer opens a dispute on a payment that was already refunded?",
+      "expected": ["policies/disputes-and-chargebacks.md"],
+      "supporting": ["policies/refunds.md"],
+      "note": "Trap 4, multi-document."
+    },
+    {
+      "id": "trap-secret-rotation",
+      "group": "trap",
+      "question": "How do I rotate a webhook signing secret without losing events?",
+      "expected": ["runbooks/signing-secret-rotation.md"],
+      "supporting": ["api/webhooks.md"],
+      "note": "Trap 4, multi-document."
+    },
+    {
+      "id": "trap-latest-release",
+      "group": "trap",
+      "question": "What changed in the latest API release?",
+      "expected": ["release-notes/2026-10-api-2.9.md"],
+      "supporting": [],
+      "note": "Trap 6, temporal. Ten release notes share one shape; only the period says which is newest."
+    },
+    {
+      "id": "trap-latest-settlement",
+      "group": "trap",
+      "question": "How did Brindle Market's most recent settlement report look?",
+      "expected": ["settlement-reports/2026-10-brindle-market.md"],
+      "supporting": ["merchants/brindle-market.md"],
+      "note": "Traps 2 and 6: twelve Brindle Market reports, one template."
+    },
+    {
+      "id": "trap-identifier",
+      "group": "trap",
+      "question": "What does webhookctl isolate do?",
+      "expected": ["runbooks/webhook-backlog.md"],
+      "supporting": ["incidents/2026-06-webhook-delay.md"],
+      "note": "Trap 3, exact identifier."
+    },
+    {
+      "id": "trap-template-month",
+      "group": "trap",
+      "question": "What was Pellucid Beauty's chargeback ratio in August 2026?",
+      "expected": ["settlement-reports/2026-08-pellucid-beauty.md"],
+      "supporting": ["policies/disputes-and-chargebacks.md"],
+      "note": "Trap 2: only the header separates this report from 65 others."
+    },
+    {
+      "id": "trap-template-migration",
+      "group": "trap",
+      "question": "In which settlement month did Copperline finish migrating from API v1 to v2?",
+      "expected": ["settlement-reports/2026-05-copperline.md"],
+      "supporting": ["merchants/copperline.md"],
+      "note": "Trap 2."
+    },
+    {
+      "id": "single-rate-limit",
+      "group": "single",
+      "question": "What is the live-mode rate limit for payouts?",
+      "expected": ["api/rate-limits.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-retention",
+      "group": "single",
+      "question": "How long are API request logs kept?",
+      "expected": ["policies/data-retention.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-risk-block",
+      "group": "single",
+      "question": "Which risk-scorer score range blocks a payment?",
+      "expected": ["policies/transaction-monitoring.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-payout-minimum",
+      "group": "single",
+      "question": "What is the minimum payout amount in SEK?",
+      "expected": ["policies/payout-schedule.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-kyb",
+      "group": "single",
+      "question": "Which documents does a merchant need for KYB verification?",
+      "expected": ["policies/merchant-onboarding-kyb.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-safeguarding",
+      "group": "single",
+      "question": "What should on-call do when the safeguarding reconciliation invariant breaks?",
+      "expected": ["runbooks/ledger-reconciliation.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-oncall-ack",
+      "group": "single",
+      "question": "How quickly must the primary on-call acknowledge a page?",
+      "expected": ["oncall-and-escalation.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-minor-units",
+      "group": "single",
+      "question": "Why did Vantor switch API amounts to minor units?",
+      "expected": ["decisions/adr-002-minor-units.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-risk-timeout",
+      "group": "single",
+      "question": "What caused the risk-scorer timeouts in February 2026?",
+      "expected": ["incidents/2026-02-risk-scorer-timeout.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-first-payout-hold",
+      "group": "single",
+      "question": "Which merchant has its first payouts held for 14 days, and why?",
+      "expected": ["merchants/quayside-electronics.md"],
+      "supporting": ["settlement-reports/2026-07-quayside-electronics.md"]
+    },
+    {
+      "id": "single-pagination",
+      "group": "single",
+      "question": "How does cursor pagination work on list endpoints?",
+      "expected": ["api/pagination.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-restricted-keys",
+      "group": "single",
+      "question": "How do restricted API keys work?",
+      "expected": ["api/authentication.md"],
+      "supporting": []
+    },
+    {
+      "id": "single-truncated-file",
+      "group": "single",
+      "question": "Why were GBP payouts held in August 2026?",
+      "expected": ["incidents/2026-08-settlement-file-truncated.md"],
+      "supporting": ["runbooks/settlement-file-mismatch.md"]
+    },
+    {
+      "id": "single-3ds-card",
+      "group": "single",
+      "question": "Which sandbox test card triggers 3-D Secure?",
+      "expected": ["api/sandbox-testing.md"],
+      "supporting": []
+    },
+    {
+      "id": "refuse-parental-leave",
+      "group": "refusal",
+      "question": "What is the parental leave policy at Vantor?",
+      "expected": [],
+      "supporting": [],
+      "shouldRefuse": true
+    },
+    {
+      "id": "refuse-valuation",
+      "group": "refusal",
+      "question": "What was Vantor valued at in its last funding round?",
+      "expected": [],
+      "supporting": [],
+      "shouldRefuse": true
+    },
+    {
+      "id": "refuse-apple-pay",
+      "group": "refusal",
+      "question": "How do I integrate Apple Pay with the Vantor API?",
+      "expected": [],
+      "supporting": [],
+      "shouldRefuse": true,
+      "note": "Near miss: payments vocabulary, but the corpus does not cover Apple Pay."
+    }
+  ]
+}

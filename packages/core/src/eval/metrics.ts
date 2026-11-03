@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const GoldenQuestionSchema = z.object({
   id: z.string(),
-  group: z.enum(['sample', 'derived', 'refusal']),
+  group: z.enum(['trap', 'single', 'refusal']),
   question: z.string(),
   /** Documents recall and MRR are scored against. Empty for refusal questions. */
   expected: z.array(z.string()),

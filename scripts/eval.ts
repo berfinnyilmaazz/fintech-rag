@@ -234,7 +234,7 @@ async function main(): Promise<void> {
   const golden = GoldenSetSchema.parse(JSON.parse(await readFile(GOLDEN_PATH, 'utf8')));
   const answerable = golden.questions.filter((question) => !question.shouldRefuse);
   const refusals = golden.questions.filter((question) => question.shouldRefuse);
-  const samples = answerable.filter((question) => question.group === 'sample').length;
+  const samples = answerable.filter((question) => question.group === 'trap').length;
 
   console.log(
     `Golden set: ${answerable.length} answerable (${samples} trap questions) ` +
