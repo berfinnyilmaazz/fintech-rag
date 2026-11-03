@@ -34,12 +34,20 @@ export const NO_ANSWER_TEXT = 'The corpus does not cover this.';
  * is called.
  *
  * **Calibrated, not chosen.** `scripts/calibrate-threshold.ts` measures `topCosine` for
- * answerable, out-of-corpus and unrelated questions; the threshold sits in the gap between
- * "unrelated" and "answerable". The measured ranges are in EVAL_RESULTS.md.
+ * every golden-set question plus three unrelated ones:
+ *
+ * | group                                    | range           |
+ * |------------------------------------------|-----------------|
+ * | 23 answerable golden-set questions       | 0.5709 – 0.8447 |
+ * | out-of-corpus, in-domain wording         | 0.6204 – 0.7183 |
+ * | unrelated to the domain entirely         | 0.4284 – 0.4465 |
+ *
+ * 0.51 sits in the middle of the 0.1244-wide gap between "unrelated" and "answerable",
+ * about 0.06 clear of both sides.
  *
  * **What this threshold does not do:** it cannot reliably catch out-of-corpus questions
  * phrased in domain vocabulary, which can score above questions the corpus genuinely
  * answers. Raising the threshold to catch them would refuse real questions instead. Those are
  * refused by the model, under instruction, with every citation validated afterwards.
  */
-export const NO_ANSWER_COSINE_THRESHOLD = 0.53;
+export const NO_ANSWER_COSINE_THRESHOLD = 0.51;

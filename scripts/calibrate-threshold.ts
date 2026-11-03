@@ -1,5 +1,7 @@
 import 'dotenv/config';
-import { search } from '@rag/core';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { GoldenSetSchema, REPO_ROOT, search } from '@rag/core';
 import { closeDb } from '@rag/db';
 
 /**
@@ -12,20 +14,17 @@ import { closeDb } from '@rag/db';
  * plausible.
  */
 
-const ANSWERABLE: readonly string[] = [
-  'How do I create a payment with the current Payments API, and what happened to /v1/charges?',
-  'Why were payouts duplicated in April 2026, and what changed to prevent it?',
-  'What happens if a buyer opens a dispute on a payment that was already refunded?',
-  'How do I rotate a webhook signing secret without losing events?',
-  'What changed in the latest API release?',
-];
+const GOLDEN_PATH = resolve(REPO_ROOT, 'packages/core/eval/golden.json');
 
-/** In-domain vocabulary, but the corpus holds no answer. */
-const OUT_OF_CORPUS: readonly string[] = [
-  'What is the parental leave policy at Vantor?',
-  'What was Vantor valued at in its last funding round?',
-  'How do I integrate Apple Pay with the Vantor API?',
-];
+/** Golden-set questions, so the calibration and the eval measure the same thing. */
+async function loadGolden(): Promise<{ answerable: string[]; outOfCorpus: string[] }> {
+  const golden = GoldenSetSchema.parse(JSON.parse(await readFile(GOLDEN_PATH, 'utf8')));
+  return {
+    answerable: golden.questions.filter((q) => !q.shouldRefuse).map((q) => q.question),
+    // In-domain vocabulary, but the corpus holds no answer.
+    outOfCorpus: golden.questions.filter((q) => q.shouldRefuse).map((q) => q.question),
+  };
+}
 
 /** Nothing to do with the domain at all — the floor the threshold can realistically catch. */
 const UNRELATED: readonly string[] = [
@@ -80,11 +79,12 @@ function spread(label: string, answerable: Measured[], out: Measured[], key: key
 }
 
 async function main(): Promise<void> {
-  const answerable = await measure(ANSWERABLE);
-  const outOfCorpus = await measure(OUT_OF_CORPUS);
+  const golden = await loadGolden();
+  const answerable = await measure(golden.answerable);
+  const outOfCorpus = await measure(golden.outOfCorpus);
   const unrelated = await measure(UNRELATED);
 
-  report('ANSWERABLE — trap questions from the golden set', answerable);
+  report('ANSWERABLE — every answerable golden-set question', answerable);
   report('OUT OF CORPUS — in-domain wording, no answer in the corpus', outOfCorpus);
   report('UNRELATED — nothing to do with the domain', unrelated);
 
