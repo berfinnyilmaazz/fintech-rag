@@ -78,12 +78,16 @@ export const DEFAULT_TOP_K = 6;
  * The trade-off is accepted: a long question whose terms never co-occur gets vector-only
  * retrieval, which is what the measurements say is the better outcome here.
  *
- * MMR is kept only while it costs nothing at rank 1 and lowers the mean pairwise similarity
- * of the results on the repetitive settlement-report queries it was written for. The combination
- * shipped here is the one that was measured, not two separately-measured options stacked.
+ * MMR is implemented and measured but off by default. On this corpus it diversifies three of
+ * four repetitive settlement-report queries by one extra merchant, and in exchange it pushes the
+ * deprecated Payments API v1 out of the top 6 for the v1/v2 question — v1 is near-identical to
+ * v2, which is exactly what MMR penalises, and the answer needs v1 in context to say it is
+ * retired. It also lowers MRR@10 (0.902 → 0.891) and supporting-document coverage. The
+ * combination shipped here is the one that was measured, not separately-measured options
+ * stacked.
  */
 export const DEFAULT_KEYWORD_MODE: KeywordMode = 'and';
-export const DEFAULT_MMR = true;
+export const DEFAULT_MMR = false;
 export const DEFAULT_RECENCY = true;
 
 /** How many candidates each arm contributes before fusion. */

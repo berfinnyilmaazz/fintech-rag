@@ -136,11 +136,12 @@ export function SearchView() {
               <span>{result.chunks.length} chunks</span>
               <span>topCosine {result.topCosine?.toFixed(4) ?? '—'}</span>
               <span>{result.latencyMs} ms</span>
-              {/* Named because MMR reorders the fused list: without this the score column
-                  reads as non-monotonic for no visible reason. Mirrors MMR_LAMBDA and
-                  DEFAULT_MMR in packages/core — client components cannot import core. */}
+              {/* Named because the recency tie-break can reorder the fused list on "latest"
+                  questions: without this the score column reads as non-monotonic for no
+                  visible reason. Mirrors DEFAULT_RECENCY and DEFAULT_MMR in packages/core —
+                  client components cannot import core. */}
               <span>
-                {result.mode === 'hybrid' ? 'hybrid · RRF k=60 · MMR λ0.5' : 'vector only'}
+                {result.mode === 'hybrid' ? 'hybrid · RRF k=60 · recency' : 'vector only'}
               </span>
             </div>
 

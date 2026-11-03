@@ -80,7 +80,7 @@ const VARIANTS: readonly Variant[] = [
   },
   {
     id: 'and+rec',
-    label: 'hybrid AND · recency',
+    label: 'hybrid AND · recency  ← shipped',
     mode: 'hybrid',
     keywordMode: 'and',
     mmr: false,
@@ -101,7 +101,7 @@ const VARIANTS: readonly Variant[] = [
   },
   {
     id: 'and+rec+mmr.5',
-    label: 'hybrid AND · recency · MMR λ0.5  ← shipped',
+    label: 'hybrid AND · recency · MMR λ0.5',
     mode: 'hybrid',
     keywordMode: 'and',
     mmr: true,
