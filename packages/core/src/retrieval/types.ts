@@ -30,6 +30,8 @@ export interface SearchOptions {
   /** Diversify the fused candidates before returning topK. See mmr.ts. */
   mmr?: boolean;
   mmrLambda?: number;
+  /** Promote the newest dated document on "latest" questions. See recency.ts. */
+  recency?: boolean;
 }
 
 /**
@@ -70,16 +72,19 @@ export const DEFAULT_TOP_K = 6;
  * What the application actually retrieves with. Every alternative was measured against the
  * golden set rather than argued about; the tables are in EVAL_RESULTS.md.
  *
- * `fallback` runs the strict AND query and widens to OR only when AND matched nothing, so a
- * long natural-language question cannot silently empty the keyword arm. Plain `or` lets
- * weak partial matches climb above the right document.
+ * `and` is the default because it measured best. `fallback` was the default on an earlier
+ * corpus, where it removed a failure mode at no cost; on this one, when AND matches nothing
+ * the OR arm it widens to is noisier than having no keyword arm at all, and it costs recall@1.
+ * The trade-off is accepted: a long question whose terms never co-occur gets vector-only
+ * retrieval, which is what the measurements say is the better outcome here.
  *
  * MMR is kept only while it costs nothing at rank 1 and lowers the mean pairwise similarity
  * of the results on the repetitive settlement-report queries it was written for. The combination
  * shipped here is the one that was measured, not two separately-measured options stacked.
  */
-export const DEFAULT_KEYWORD_MODE: KeywordMode = 'fallback';
+export const DEFAULT_KEYWORD_MODE: KeywordMode = 'and';
 export const DEFAULT_MMR = true;
+export const DEFAULT_RECENCY = true;
 
 /** How many candidates each arm contributes before fusion. */
 export const CANDIDATE_POOL = 20;

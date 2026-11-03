@@ -44,18 +44,20 @@ interface Variant extends EvalVariant {
   keywordMode?: KeywordMode;
   mmr?: boolean;
   mmrLambda?: number;
+  recency: boolean;
   /** BGE's asymmetric query instruction. §9 of CLAUDE.md left this open for the eval. */
   prefix: boolean;
 }
 
 const VARIANTS: readonly Variant[] = [
-  { id: 'vector', label: 'vector-only', mode: 'vector', mmr: false, prefix: true },
+  { id: 'vector', label: 'vector-only', mode: 'vector', mmr: false, recency: false, prefix: true },
   {
     id: 'and',
     label: 'hybrid RRF · AND',
     mode: 'hybrid',
     keywordMode: 'and',
     mmr: false,
+    recency: false,
     prefix: true,
   },
   {
@@ -64,6 +66,7 @@ const VARIANTS: readonly Variant[] = [
     mode: 'hybrid',
     keywordMode: 'or',
     mmr: false,
+    recency: false,
     prefix: true,
   },
   {
@@ -72,61 +75,67 @@ const VARIANTS: readonly Variant[] = [
     mode: 'hybrid',
     keywordMode: 'fallback',
     mmr: false,
+    recency: false,
     prefix: true,
   },
   {
-    id: 'and+mmr',
-    label: 'hybrid AND · MMR λ0.5',
-    mode: 'hybrid',
-    keywordMode: 'and',
-    mmr: true,
-    mmrLambda: 0.5,
-    prefix: true,
-  },
-  {
-    id: 'or+mmr',
-    label: 'hybrid OR · MMR λ0.5',
-    mode: 'hybrid',
-    keywordMode: 'or',
-    mmr: true,
-    mmrLambda: 0.5,
-    prefix: true,
-  },
-  {
-    id: 'fallback+mmr.7',
-    label: 'hybrid AND→OR · MMR λ0.7',
-    mode: 'hybrid',
-    keywordMode: 'fallback',
-    mmr: true,
-    mmrLambda: 0.7,
-    prefix: true,
-  },
-  // λ0.7 turned out to be too weak to move anything in this embedding space, where related
-  // documents sit at 0.85+ cosine of each other. Lower λ is measured rather than assumed.
-  {
-    id: 'fallback+mmr.5',
-    label: 'hybrid AND→OR · MMR λ0.5  ← shipped',
-    mode: 'hybrid',
-    keywordMode: 'fallback',
-    mmr: true,
-    mmrLambda: 0.5,
-    prefix: true,
-  },
-  {
-    id: 'fallback+mmr.3',
-    label: 'hybrid AND→OR · MMR λ0.3',
-    mode: 'hybrid',
-    keywordMode: 'fallback',
-    mmr: true,
-    mmrLambda: 0.3,
-    prefix: true,
-  },
-  {
-    id: 'and/no-prefix',
-    label: 'hybrid AND · no query prefix',
+    id: 'and+rec',
+    label: 'hybrid AND · recency',
     mode: 'hybrid',
     keywordMode: 'and',
     mmr: false,
+    recency: true,
+    prefix: true,
+  },
+  // λ0.7 is near-inert in this embedding space, where related documents sit at 0.85+ cosine of
+  // each other. Lower λ is measured rather than assumed.
+  {
+    id: 'and+rec+mmr.7',
+    label: 'hybrid AND · recency · MMR λ0.7',
+    mode: 'hybrid',
+    keywordMode: 'and',
+    mmr: true,
+    mmrLambda: 0.7,
+    recency: true,
+    prefix: true,
+  },
+  {
+    id: 'and+rec+mmr.5',
+    label: 'hybrid AND · recency · MMR λ0.5  ← shipped',
+    mode: 'hybrid',
+    keywordMode: 'and',
+    mmr: true,
+    mmrLambda: 0.5,
+    recency: true,
+    prefix: true,
+  },
+  {
+    id: 'and+rec+mmr.3',
+    label: 'hybrid AND · recency · MMR λ0.3',
+    mode: 'hybrid',
+    keywordMode: 'and',
+    mmr: true,
+    mmrLambda: 0.3,
+    recency: true,
+    prefix: true,
+  },
+  {
+    id: 'fallback+rec+mmr.5',
+    label: 'hybrid AND→OR · recency · MMR λ0.5',
+    mode: 'hybrid',
+    keywordMode: 'fallback',
+    mmr: true,
+    mmrLambda: 0.5,
+    recency: true,
+    prefix: true,
+  },
+  {
+    id: 'and+rec/no-prefix',
+    label: 'hybrid AND · recency · no query prefix',
+    mode: 'hybrid',
+    keywordMode: 'and',
+    mmr: false,
+    recency: true,
     prefix: false,
   },
 ];
@@ -158,6 +167,7 @@ async function runSearch(variant: Variant, question: string, topK: number) {
     keywordMode: variant.keywordMode,
     mmr: variant.mmr,
     mmrLambda: variant.mmrLambda,
+    recency: variant.recency,
     queryVector,
   });
 }
@@ -281,7 +291,9 @@ async function main(): Promise<void> {
   console.log('\n### Result diversity on repetitive queries (topK 6)\n');
   const diversity: DiversityRow[] = [];
   for (const query of REPETITIVE_QUERIES) {
-    for (const variant of VARIANTS.filter((v) => v.id.startsWith('fallback'))) {
+    for (const variant of VARIANTS.filter(
+      (v) => v.id === 'and+rec' || v.id.startsWith('and+rec+mmr'),
+    )) {
       const { chunks } = await runSearch(variant, query, 6);
       diversity.push({ query, variant: variant.id, ...(await diversityOf(chunks)) });
     }

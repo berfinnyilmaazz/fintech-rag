@@ -3,11 +3,13 @@ import type { RetrievedChunk } from '@rag/shared';
 import { sql } from 'drizzle-orm';
 import { getEmbeddingProvider } from '../embeddings/index';
 import { MMR_LAMBDA, MMR_POOL, selectMmr } from './mmr';
+import { hasRecencyCue, promoteLatest } from './recency';
 import { cosineFromDistance, HybridRowSchema, parseEmbedding, parseRows } from './rows';
 import {
   CANDIDATE_POOL,
   DEFAULT_KEYWORD_MODE,
   DEFAULT_MMR,
+  DEFAULT_RECENCY,
   DEFAULT_TOP_K,
   DEPRECATED_RANK_PENALTY,
   RRF_K,
@@ -58,9 +60,10 @@ export async function hybridSearch(options: SearchOptions): Promise<SearchResult
   }${options.project ? sql` AND d.project = ${options.project}` : sql``}`;
 
   const useMmr = options.mmr ?? DEFAULT_MMR;
-  // MMR needs something to choose between, so the SQL returns a pool and the diversification
-  // narrows it. Without MMR the database returns exactly what the caller asked for.
-  const fetchLimit = useMmr ? Math.max(MMR_POOL, topK) : topK;
+  const useRecency = (options.recency ?? DEFAULT_RECENCY) && hasRecencyCue(options.query);
+  // MMR and the recency tie-break need something to choose between, so the SQL returns a
+  // pool and they narrow it. Otherwise the database returns exactly what was asked for.
+  const fetchLimit = useMmr || useRecency ? Math.max(MMR_POOL, topK) : topK;
 
   // Embeddings are 384 floats a row; they are only shipped back when MMR will actually use
   // them, so the ordinary retrieval path stays as cheap as it was.
@@ -172,13 +175,14 @@ export async function hybridSearch(options: SearchOptions): Promise<SearchResult
   `);
 
   const fused = parseRows(HybridRowSchema, rows);
+  const ranked = useRecency ? promoteLatest(fused) : fused;
   const parsed = useMmr
     ? selectMmr(
-        fused.map((row) => ({ ...row, embedding: parseEmbedding(row.embedding) })),
+        ranked.map((row) => ({ ...row, embedding: parseEmbedding(row.embedding) })),
         topK,
         options.mmrLambda ?? MMR_LAMBDA,
       )
-    : fused;
+    : ranked.slice(0, topK);
 
   const chunks: RetrievedChunk[] = parsed.map((row) => ({
     chunkId: row.chunk_id,

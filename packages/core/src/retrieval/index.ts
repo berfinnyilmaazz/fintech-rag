@@ -1,5 +1,6 @@
 export { hybridSearch } from './hybrid';
 export { cosineSimilarity, MMR_LAMBDA, MMR_POOL, type MmrItem, selectMmr } from './mmr';
+export { hasRecencyCue, promoteLatest, type RecencyItem } from './recency';
 export {
   cosineFromDistance,
   type HybridRow,
@@ -14,6 +15,7 @@ export {
   CANDIDATE_POOL,
   DEFAULT_KEYWORD_MODE,
   DEFAULT_MMR,
+  DEFAULT_RECENCY,
   DEFAULT_TOP_K,
   DEPRECATED_RANK_PENALTY,
   type KeywordMode,
