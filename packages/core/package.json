@@ -1,0 +1,29 @@
+{
+  "name": "@rag/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "4.0.47",
+    "@huggingface/transformers": "4.2.0",
+    "@rag/db": "workspace:*",
+    "@rag/shared": "workspace:*",
+    "ai": "7.0.70",
+    "drizzle-orm": "0.45.2",
+    "js-tiktoken": "1.0.21",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

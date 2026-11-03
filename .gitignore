@@ -1,0 +1,30 @@
+node_modules/
+.next/
+dist/
+.turbo/
+*.tsbuildinfo
+# `pnpm shots` writes every page at every width here. Only the handful the README
+# embeds is committed, so regenerating them shows up as a diff on exactly those files.
+screenshots/*
+!screenshots/chat-answered-1440.png
+!screenshots/chat-answered-375.png
+!screenshots/search-results-1440.png
+!screenshots/dashboard-1440.png
+!screenshots/dashboard-375.png
+
+.env
+.env.local
+
+# Local working material, deliberately not committed:
+#   01/02/03-*.md         planning drafts superseded by CLAUDE.md; they still contain
+#                         abandoned decisions (143 files, an RRF-score threshold,
+#                         500-token chunking) that would contradict the README
+#   04-ui-mockup.html     superseded by the screenshots in the README
+# The repo ships README.md, AI_USAGE.md, EVAL_RESULTS.md and CLAUDE.md.
+docs/
+
+# Cached embedding model downloads (~127 MB, fetched on first run).
+.models/
+
+*.log
+.DS_Store

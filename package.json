@@ -1,0 +1,44 @@
+{
+  "name": "fintech-rag",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck && tsc --noEmit",
+    "test": "turbo run test",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "db:generate": "pnpm --filter @rag/db generate",
+    "db:migrate": "pnpm --filter @rag/db migrate",
+    "db:seed": "pnpm --filter @rag/db seed",
+    "ingest": "tsx scripts/ingest.ts",
+    "search": "tsx scripts/search.ts",
+    "ask": "tsx scripts/ask.ts",
+    "eval": "tsx scripts/eval.ts",
+    "test:load": "tsx scripts/test-load.ts",
+    "calibrate": "tsx scripts/calibrate-threshold.ts",
+    "shots": "tsx scripts/screenshot.ts",
+    "test:mcp": "tsx scripts/test-mcp.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.9",
+    "@modelcontextprotocol/client": "2.0.0",
+    "@types/node": "22.20.1",
+    "dotenv": "17.4.2",
+    "playwright-core": "1.62.1",
+    "tsx": "4.23.12",
+    "turbo": "2.10.11",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@rag/core": "workspace:*",
+    "@rag/db": "workspace:*",
+    "@rag/shared": "workspace:*"
+  }
+}

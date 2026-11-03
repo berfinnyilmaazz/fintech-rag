@@ -1,0 +1,120 @@
+import 'dotenv/config';
+import { search } from '@rag/core';
+import { closeDb } from '@rag/db';
+
+/**
+ * Calibrates the no-answer threshold by measurement rather than by guessing.
+ *
+ * Prints `topCosine` — the best cosine similarity anywhere in the vector candidate pool —
+ * for questions the corpus can answer and questions it cannot. The threshold belongs in the
+ * gap between the two groups; if there is no gap, the threshold cannot do this job alone
+ * and that has to be said out loud rather than papered over with a number that looks
+ * plausible.
+ */
+
+const ANSWERABLE: readonly string[] = [
+  'How do I create a payment with the current Payments API, and what happened to /v1/charges?',
+  'Why were payouts duplicated in April 2026, and what changed to prevent it?',
+  'What happens if a buyer opens a dispute on a payment that was already refunded?',
+  'How do I rotate a webhook signing secret without losing events?',
+  'What changed in the latest API release?',
+];
+
+/** In-domain vocabulary, but the corpus holds no answer. */
+const OUT_OF_CORPUS: readonly string[] = [
+  'What is the parental leave policy at Vantor?',
+  'What was Vantor valued at in its last funding round?',
+  'How do I integrate Apple Pay with the Vantor API?',
+];
+
+/** Nothing to do with the domain at all — the floor the threshold can realistically catch. */
+const UNRELATED: readonly string[] = [
+  'What is the capital of France?',
+  'How do I bake sourdough bread at home?',
+  'Explain the offside rule in football.',
+];
+
+interface Measured {
+  q: string;
+  top: number;
+  /** How far the best hit stands out from the rest of the pool. */
+  margin: number;
+  /** How many of the topK the keyword arm also found. */
+  keywordHits: number;
+}
+
+async function measure(questions: readonly string[]): Promise<Measured[]> {
+  const measured: Measured[] = [];
+  for (const q of questions) {
+    const { topCosine, chunks } = await search({ query: q, topK: 6 });
+    const cosines = chunks.map((c) => c.cosine).filter((c): c is number => c !== null);
+    const mean = cosines.reduce((sum, c) => sum + c, 0) / (cosines.length || 1);
+    measured.push({
+      q,
+      top: topCosine ?? 0,
+      margin: (topCosine ?? 0) - mean,
+      keywordHits: chunks.filter((c) => c.keywordRank !== null).length,
+    });
+  }
+  return measured;
+}
+
+function report(label: string, rows: Measured[]): void {
+  console.log(`\n${label}\n`);
+  console.log('  topCos  margin  kwHits  question');
+  for (const { q, top, margin, keywordHits } of rows) {
+    const text = q.length > 54 ? `${q.slice(0, 51)}...` : q;
+    console.log(
+      `  ${top.toFixed(4)}  ${margin.toFixed(4)}     ${String(keywordHits).padStart(2)}   ${text}`,
+    );
+  }
+}
+
+function spread(label: string, answerable: Measured[], out: Measured[], key: keyof Measured): void {
+  const lo = Math.min(...answerable.map((r) => Number(r[key])));
+  const hi = Math.max(...out.map((r) => Number(r[key])));
+  const gap = lo - hi;
+  console.log(
+    `  ${label.padEnd(12)} lowest answerable ${lo.toFixed(4)} · highest out-of-corpus ${hi.toFixed(4)} · gap ${gap >= 0 ? '+' : ''}${gap.toFixed(4)}${gap > 0 ? '  ← separates' : '  ← overlaps'}`,
+  );
+}
+
+async function main(): Promise<void> {
+  const answerable = await measure(ANSWERABLE);
+  const outOfCorpus = await measure(OUT_OF_CORPUS);
+  const unrelated = await measure(UNRELATED);
+
+  report('ANSWERABLE — trap questions from the golden set', answerable);
+  report('OUT OF CORPUS — in-domain wording, no answer in the corpus', outOfCorpus);
+  report('UNRELATED — nothing to do with the domain', unrelated);
+
+  const highestUnrelated = Math.max(...unrelated.map((r) => r.top));
+  console.log(`\n  highest unrelated topCosine: ${highestUnrelated.toFixed(4)}`);
+
+  console.log(`\n${'-'.repeat(88)}`);
+  console.log('Can any single signal separate the two groups?\n');
+  spread('topCosine', answerable, outOfCorpus, 'top');
+  spread('margin', answerable, outOfCorpus, 'margin');
+  spread('keywordHits', answerable, outOfCorpus, 'keywordHits');
+
+  const lowestAnswerable = Math.min(...answerable.map((r) => r.top));
+  const highestOutOfCorpus = Math.max(...outOfCorpus.map((r) => r.top));
+
+  console.log('');
+  if (lowestAnswerable > highestOutOfCorpus) {
+    const midpoint = (lowestAnswerable + highestOutOfCorpus) / 2;
+    console.log(`  topCosine separates cleanly. Threshold candidate: ${midpoint.toFixed(4)}`);
+  } else {
+    console.log('  topCosine OVERLAPS: out-of-corpus questions score above answerable ones.');
+    console.log('  A single cosine threshold cannot carry this requirement on its own.');
+    console.log(`  A threshold below ${lowestAnswerable.toFixed(4)} only catches far-out queries;`);
+    console.log('  everything above it has to be refused by the model and the citation check.');
+  }
+}
+
+main()
+  .catch((error: unknown) => {
+    console.error('\ncalibrate failed:', error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  })
+  .finally(closeDb);

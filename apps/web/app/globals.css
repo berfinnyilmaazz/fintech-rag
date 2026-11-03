@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/*
+ * ---------------------------------------------------------------------------
+ * House rules. These are constraints, not preferences — they are what keeps a
+ * dense, data-heavy interface from turning into a dashboard-shaped collage.
+ * ---------------------------------------------------------------------------
+ *
+ * NO EMOJI.       Icons are lucide-react, strokeWidth 1.5, 16px (14 small, 18 large),
+ *                 in a neutral ink tone (ink-3 / ink-4) — never the accent.
+ * NO GRADIENTS,   no coloured shadows. Elevation is a 1px border. The only shadow
+ * NO GLOW.        permitted anywhere is 0 1px 2px rgb(41 37 36 / .04).
+ * NO DECORATIVE   The accent belongs to exactly three things: the primary button,
+ * COLOUR.         the active nav item, and citation numbers. Every other colour has
+ *                 to carry meaning — ok, warn, err, info.
+ * SPACING         is a multiple of 4: 4 8 12 16 24 32 48.
+ * TECHNICAL TEXT  — file paths, scores, durations, code — is mono.
+ * READING COLUMN  never exceeds 760px.
+ * RADII           6 small, 10 card, 14 outer frame. Fully round is for badges and
+ *                 avatars only.
+ */
+
+/*
+ * Tailwind v4 keeps theme tokens here rather than in a tailwind.config.js, which no longer
+ * exists. Every name below becomes a utility: --color-ink-2 gives text-ink-2, bg-ink-2 and
+ * border-ink-2.
+ *
+ * Direction: warm minimal. A limestone ground, one muted sage accent, and hairline borders
+ * instead of shadows — the interface should read like paper, not like a dashboard.
+ */
+@theme {
+  --color-bg: #faf9f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f4f1;
+  --color-border: #ebe8e3;
+  --color-border-strong: #ddd9d2;
+
+  --color-ink: #292524;
+  --color-ink-2: #57534e;
+  --color-ink-3: #8a8377;
+  --color-ink-4: #a8a29a;
+
+  --color-accent: #5a6b57;
+  --color-accent-hover: #4a5a48;
+  --color-accent-soft: #eef1ed;
+  --color-accent-line: #cdd6ca;
+
+  --color-ok: #4d7c56;
+  --color-ok-soft: #edf4ee;
+  --color-warn: #9a6b3f;
+  --color-warn-soft: #f8f1e9;
+  --color-err: #a05252;
+  --color-err-soft: #f9eded;
+  --color-info: #5b6b7c;
+  --color-info-soft: #eef1f4;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* The sidebar collapses into a top bar below this. */
+  --breakpoint-nav: 960px;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Scores and latencies sit in columns; proportional digits make them jump. */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* The accent is low-contrast by design, so focus needs to be unmistakable. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* The one permitted shadow, as a utility. */
+@utility shadow-hairline {
+  box-shadow: 0 1px 2px rgb(41 37 36 / 0.04);
+}
+
+/* Reading typography for generated answers. */
+@utility prose-answer {
+  font-size: 14.5px;
+  line-height: 1.72;
+  color: var(--color-ink);
+}
+
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background-color: var(--color-ink-3);
+  animation: caret-blink 1.1s steps(1) infinite;
+}
