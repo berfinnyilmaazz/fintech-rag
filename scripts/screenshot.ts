@@ -32,7 +32,7 @@ const PAGES = [
 /**
  * The same question on both pages, so the README can show one retrieval two ways: the raw
  * ranks on /search and the grounded answer built from them on /chat. It is also trap 1 —
- * the deprecated v2 notes have to appear, below v3.
+ * the deprecated Payments API v1 has to appear, below v2.
  */
 const SEARCH_QUERY =
   'How do I create a payment with the current Payments API, and what happened to /v1/charges?';
