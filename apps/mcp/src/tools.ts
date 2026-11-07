@@ -32,6 +32,13 @@ export function registerTools(server: McpServer): void {
         'with their fused score, the rank each arm gave them, and document metadata. Does not ' +
         'call a language model — use this when you want sources rather than an answer.',
       inputSchema: SearchInput,
+      // Embeddings are computed by the local model, so a search never leaves the process.
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     async (args) => {
       const result = await search({
@@ -85,6 +92,14 @@ export function registerTools(server: McpServer): void {
         'documents. When the corpus does not cover the question it says so and returns no ' +
         'citations rather than inventing them.',
       inputSchema: AnswerInput,
+      // Read-only because the handler passes `log: false`; open-world because a configured
+      // provider sends the passages to Gemini, whose output varies between calls.
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
     },
     async (args) => {
       // `log: false` keeps MCP traffic out of the dashboard's search analytics, which
