@@ -1,3 +1,4 @@
+[![M8ven Score](https://m8ven.ai/badge/mcp/berfinnyilmaazz-fintech-rag-1ric9d?v=1ba937bb64eedcd798a45d95a55d8b08)](https://m8ven.ai/mcp/berfinnyilmaazz-fintech-rag-1ric9d?s=readme)
 # Fintech RAG
 
 A TypeScript monorepo that makes an internal document corpus answerable: a chat surface that
