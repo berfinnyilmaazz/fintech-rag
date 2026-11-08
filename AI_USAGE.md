@@ -141,6 +141,28 @@ banner in the eval's answer column. The README now says both values must be set.
 outscores 17 of 23 answerable questions; it is 13. It said vector-only misranks six questions;
 it is nine. Both recounted from the raw output before committing.
 
+### After publication
+
+**21. A scan report that undercounted by an order of magnitude.** An external scanner flagged
+two advisories in one dev dependency. `pnpm audit` found 72, six critical — five in the
+pinned Next.js, including unauthenticated remote code execution, plus one in Express under
+the MCP HTTP transport. The brief's own instruction, `npm audit`, could not run at all: this
+is a pnpm repo and npm needs its own lockfile. The scoped fix was committed first; the wider
+upgrade waited for approval because it changed the pinned versions in this file.
+
+**22. A transitive fix pnpm would not apply.** `pnpm update --depth Infinity` cleared every
+other transitive advisory but left `vite` at the vulnerable 8.2.1, though `vitest` accepts
+the patched release. Adding it as a direct dependency and removing it again re-resolved it
+without an `overrides` entry. One moderate advisory is left: `drizzle-kit` still depends on
+the retired `@esbuild-kit` loader, which pins an old `esbuild`; no release of `drizzle-kit`
+removes it, and it only runs at migration-generation time.
+
+**23. A runtime bump that could have silently changed the index.** Transformers 4.3 brings a
+new ONNX runtime. A fresh clone would embed every document with it while the eval numbers
+were measured with the old one. Before trusting the eval, all 123 stored vectors were
+re-embedded and compared: minimum cosine 1.000000. The eval then reproduced EVAL_RESULTS
+exactly.
+
 ---
 
 ## How non-obvious decisions were verified
