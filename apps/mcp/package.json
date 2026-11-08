@@ -9,18 +9,18 @@
     "http": "tsx src/http.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/express": "2.0.0",
-    "@modelcontextprotocol/node": "2.0.0",
-    "@modelcontextprotocol/server": "2.0.0",
+    "@modelcontextprotocol/express": "2.0.2",
+    "@modelcontextprotocol/node": "2.1.2",
+    "@modelcontextprotocol/server": "2.4.0",
     "@rag/core": "workspace:*",
     "@rag/db": "workspace:*",
     "@rag/shared": "workspace:*",
     "dotenv": "17.4.2",
     "express": "5.2.1",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@modelcontextprotocol/client": "2.3.1",
+    "@modelcontextprotocol/client": "2.4.0",
     "@types/express": "5.0.6",
     "@types/node": "22.20.1",
     "tsx": "4.23.12",

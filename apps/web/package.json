@@ -18,12 +18,12 @@
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
     "lucide-react": "1.33.0",
-    "next": "16.3.1",
+    "next": "16.4.3",
     "next-auth": "5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwind-merge": "3.6.0",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

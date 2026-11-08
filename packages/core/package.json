@@ -14,16 +14,16 @@
   },
   "dependencies": {
     "@ai-sdk/google": "4.0.47",
-    "@huggingface/transformers": "4.2.0",
+    "@huggingface/transformers": "4.3.2",
     "@rag/db": "workspace:*",
     "@rag/shared": "workspace:*",
     "ai": "7.0.70",
     "drizzle-orm": "0.45.2",
     "js-tiktoken": "1.0.21",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "typescript": "5.9.3",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }

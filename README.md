@@ -340,13 +340,13 @@ ARIA are genuinely hard; not on a `<span>` with a border.
 |---|---|
 | **Language** | TypeScript 5.9.3, `strict` + `noUncheckedIndexedAccess`, zero `any` (enforced by Biome) |
 | **Monorepo** | pnpm 11.22.0 workspaces + Turborepo 2.10.11 |
-| **Frontend** | Next.js 16.3.1 (App Router, Turbopack), React 19.2.8, Tailwind CSS 4.3.3 |
+| **Frontend** | Next.js 16.4.3 (App Router, Turbopack), React 19.2.8, Tailwind CSS 4.3.3 |
 | **Database** | Postgres 17 + pgvector 0.8.6, Drizzle ORM 0.45.2, postgres.js 3.4.9 |
-| **Embeddings** | `@huggingface/transformers` 4.2.0 — `Xenova/bge-small-en-v1.5`, 384-dim, local |
+| **Embeddings** | `@huggingface/transformers` 4.3.2 — `Xenova/bge-small-en-v1.5`, 384-dim, local |
 | **Generation** | Vercel AI SDK 7.0.70 + `@ai-sdk/google` 4.0.47 (Gemini), Ollama, or extractive |
 | **Auth** | Auth.js v5 (`next-auth@5.0.0-beta.32`), JWT sessions, bcryptjs 3.0.3 |
-| **MCP** | `@modelcontextprotocol/server` 2.0.0 (v2 API — `registerTool`, `serveStdio`) |
-| **Validation** | Zod 4.4.3 — one schema per contract, types via `z.infer` |
+| **MCP** | `@modelcontextprotocol/server` 2.4.0 (v2 API — `registerTool`, `serveStdio`) |
+| **Validation** | Zod 4.6.7 — one schema per contract, types via `z.infer` |
 | **Tooling** | Biome 2.5.9, Vitest 4.1.11 (61 tests), tsx 4.23.12 |
 
 Every dependency is **pinned exactly** — no carets, no tildes. A range lets behaviour shift

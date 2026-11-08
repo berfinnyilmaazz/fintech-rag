@@ -47,22 +47,22 @@ Development happens on Windows / PowerShell; everything must also run on macOS a
 
 | Package | Version | Note |
 |---|---|---|
-| `next` | 16.3.1 | App Router; `proxy.ts`, not `middleware.ts` |
+| `next` | 16.4.3 | App Router; `proxy.ts`, not `middleware.ts` |
 | `react` / `react-dom` | 19.2.8 | |
 | `tailwindcss`, `@tailwindcss/postcss` | 4.3.3 | |
-| `drizzle-orm` / `drizzle-kit` | 0.45.2 / 0.31.10 | drizzle's `vector` column serialises itself — no `pgvector` package |
+| `drizzle-orm` / `drizzle-kit` | 0.45.2 / 0.31.11 | drizzle's `vector` column serialises itself — no `pgvector` package |
 | `postgres` | 3.4.9 | |
 | `next-auth` | `5.0.0-beta.32` | npm `latest` is v4 — pin exactly |
 | `@auth/drizzle-adapter` | 1.11.3 | |
 | `ai` / `@ai-sdk/google` | 7.0.70 / 4.0.47 | |
-| `@huggingface/transformers` | 4.2.0 | **not** `@xenova/transformers` |
-| `@modelcontextprotocol/server` / `express` | 2.0.0 | MCP v2: `registerTool()`. **Not** `@modelcontextprotocol/sdk` (v1) |
-| `zod` | 4.4.3 | |
+| `@huggingface/transformers` | 4.3.2 | **not** `@xenova/transformers` |
+| `@modelcontextprotocol/server` / `node` / `express` / `client` | 2.4.0 / 2.1.2 / 2.0.2 / 2.4.0 | MCP v2: `registerTool()`. **Not** `@modelcontextprotocol/sdk` (v1) |
+| `zod` | 4.6.7 | |
 | `turbo` | 2.10.11 | |
 | `typescript` | 5.9.3 | deliberately behind `latest` |
 | `@types/node` | 22.20.1 | tracks the Node 22 runtime |
 | `@biomejs/biome` | 2.5.9 | folder ignores are `!docs`, not `!docs/**` |
-| `vitest` | 4.1.11 | |
+| `vitest` | 4.1.12 | |
 | `bcryptjs` | 3.0.3 | ships its own types |
 | `js-tiktoken` | 1.0.21 | |
 | `tsx` | 4.23.12 | |
