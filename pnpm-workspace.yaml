@@ -16,6 +16,12 @@ allowBuilds:
   # half-installed sharp would break importing the package at all.
   sharp: true
 
+# drizzle-kit loads its config through the retired @esbuild-kit loader, which pins an esbuild
+# with a published advisory (GHSA-67mh-4wv8-2f99). No drizzle-kit release drops the loader, so
+# it gets the esbuild drizzle-kit itself uses. Remove once drizzle-kit stops depending on it.
+overrides:
+  '@esbuild-kit/core-utils>esbuild': 0.25.12
+
 minimumReleaseAgeExclude:
   - '@ai-sdk/gateway@4.0.56'
   - '@ai-sdk/google@4.0.47'
