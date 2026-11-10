@@ -153,9 +153,12 @@ upgrade waited for approval because it changed the pinned versions in this file.
 **22. A transitive fix pnpm would not apply.** `pnpm update --depth Infinity` cleared every
 other transitive advisory but left `vite` at the vulnerable 8.2.1, though `vitest` accepts
 the patched release. Adding it as a direct dependency and removing it again re-resolved it
-without an `overrides` entry. One moderate advisory is left: `drizzle-kit` still depends on
-the retired `@esbuild-kit` loader, which pins an old `esbuild`; no release of `drizzle-kit`
-removes it, and it only runs at migration-generation time.
+without an `overrides` entry. The last advisory could not be fixed that way: `drizzle-kit`
+still depends on the retired `@esbuild-kit` loader, which pins esbuild 0.18, and no release
+of `drizzle-kit` drops it. I first called an override not worth it — without having tried
+one. A scoped override to the esbuild `drizzle-kit` already uses was then tested against a
+baseline: `generate` and `migrate` passed before and after, and a throwaway schema column
+produced the correct `ALTER TABLE`. `pnpm audit` now reports zero advisories.
 
 **23. A runtime bump that could have silently changed the index.** Transformers 4.3 brings a
 new ONNX runtime. A fresh clone would embed every document with it while the eval numbers
